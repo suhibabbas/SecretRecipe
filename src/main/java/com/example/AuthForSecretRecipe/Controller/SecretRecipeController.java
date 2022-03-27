@@ -68,7 +68,7 @@ public class SecretRecipeController {
         Chef chef = new Chef(username ,hashedPassword);
 
         chefRepositories.save(chef);
-        return new RedirectView("/login");
+        return new RedirectView("/loginWithSecret");
     }
 
 
@@ -79,20 +79,7 @@ public class SecretRecipeController {
         return new RedirectView("/secretRecipe");
     }
 
-    //Just For Practicing
-    @GetMapping("/login")
-    public String loginPage(){
-        return "/login.html";
-    }
 
-    @PostMapping("/login")
-    public RedirectView loginChef(String username,String password){
-        Chef chef = chefRepositories.findByUsername(username);
-        if((chef== null) || (!BCrypt.checkpw(password,chef.password))){
-            return new RedirectView("/login");
-        }
-        return new RedirectView("/");
-    }
 
 
 
