@@ -5,6 +5,7 @@ import com.example.AuthForSecretRecipe.Models.Chef;
 import com.example.AuthForSecretRecipe.Models.Recipe;
 import com.example.AuthForSecretRecipe.Repositories.ChefRepositories;
 import com.example.AuthForSecretRecipe.Repositories.RecipeRepositories;
+import com.example.AuthForSecretRecipe.Repositories.RecipeRepositoriesCrud;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,13 +20,13 @@ public class SecretRecipeController {
 
 //    @Autowired
     private final ChefRepositories chefRepositories;
-//    RecipeRepositories recipeRepositories;
-
     private final RecipeRepositories recipeRepositories;
+    private final RecipeRepositoriesCrud recipeRepositoriesCrud;
 
-    public SecretRecipeController(ChefRepositories chefRepositories, RecipeRepositories recipeRepositories) {
+    public SecretRecipeController(ChefRepositories chefRepositories, RecipeRepositories recipeRepositories, RecipeRepositoriesCrud recipeRepositoriesCrud) {
         this.chefRepositories = chefRepositories;
         this.recipeRepositories = recipeRepositories;
+        this.recipeRepositoriesCrud = recipeRepositoriesCrud;
     }
 
     @GetMapping("/loginWithSecret")
@@ -95,16 +96,16 @@ public class SecretRecipeController {
         return recipeRepositories.findAll();
     }
 
-    /**
-     *
-     * @param recipe
-     * @return
-     */
-    @ResponseBody
-    @PostMapping("/recipe")
-    Recipe addRecipe(@RequestBody Recipe recipe){
-        return recipeRepositories.save(recipe);
-    }
+//    /**
+//     *
+//     * @param recipe
+//     * @return
+//     */
+//    @ResponseBody
+//    @PostMapping("/recipe")
+//    Recipe addRecipe(@RequestBody Recipe recipe){
+//        return recipeRepositories.save(recipe);
+//    }
 
     @ResponseBody
     @PostMapping("chef/{id}")
@@ -113,6 +114,12 @@ public class SecretRecipeController {
         recipe.setChef(chef);
 
         return recipeRepositories.save(recipe);
+    }
+
+    @PostMapping("/addRecipe")
+    public RedirectView addRecipe(@ModelAttribute Recipe recipe){
+        recipeRepositoriesCrud.save(recipe);
+        return new RedirectView("/secretRecipe");
     }
 
 
