@@ -56,21 +56,6 @@ public class SecretRecipeController {
         return new RedirectView("/loginWithSecret");
     }
 
-    // For practicing
-    @GetMapping("/login")
-    public String loginPage(){
-        return "/login.html";
-    }
-
-    @PostMapping("/login")
-    public RedirectView loginChef(String username,String password){
-        Chef chef = chefRepositories.findByUsername(username);
-        if((chef== null) || (!BCrypt.checkpw(password,chef.password))){
-            return new RedirectView("/login");
-        }
-        return new RedirectView("/");
-    }
-
     @GetMapping("/signup")
     public String signupPage(){
         return "/signup";
@@ -86,41 +71,29 @@ public class SecretRecipeController {
         return new RedirectView("/login");
     }
 
-    /**
-     *
-     * @return
-     */
-    @ResponseBody
-    @GetMapping("/recipe")
-    List<Recipe> getAllRecipe(){
-        return recipeRepositories.findAll();
-    }
 
-//    /**
-//     *
-//     * @param recipe
-//     * @return
-//     */
-//    @ResponseBody
-//    @PostMapping("/recipe")
-//    Recipe addRecipe(@RequestBody Recipe recipe){
-//        return recipeRepositories.save(recipe);
-//    }
-
-    @ResponseBody
-    @PostMapping("chef/{id}")
-    Recipe addRecipeToChef(@RequestBody Recipe recipe, @PathVariable Long id){
-        Chef chef =chefRepositories.findById(id).orElseThrow();
-        recipe.setChef(chef);
-
-        return recipeRepositories.save(recipe);
-    }
 
     @PostMapping("/addRecipe")
     public RedirectView addRecipe(@ModelAttribute Recipe recipe){
         recipeRepositoriesCrud.save(recipe);
         return new RedirectView("/secretRecipe");
     }
+
+    //Just For Practicing
+    @GetMapping("/login")
+    public String loginPage(){
+        return "/login.html";
+    }
+
+    @PostMapping("/login")
+    public RedirectView loginChef(String username,String password){
+        Chef chef = chefRepositories.findByUsername(username);
+        if((chef== null) || (!BCrypt.checkpw(password,chef.password))){
+            return new RedirectView("/login");
+        }
+        return new RedirectView("/");
+    }
+
 
 
 }
