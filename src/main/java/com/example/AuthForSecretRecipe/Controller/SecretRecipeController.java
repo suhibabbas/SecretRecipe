@@ -5,6 +5,7 @@ import com.example.AuthForSecretRecipe.Models.Chef;
 import com.example.AuthForSecretRecipe.Models.Recipe;
 import com.example.AuthForSecretRecipe.Repositories.ChefRepositories;
 import com.example.AuthForSecretRecipe.Repositories.RecipeRepositories;
+import com.example.AuthForSecretRecipe.Repositories.RecipeRepositoriesCrud;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,13 +20,13 @@ public class SecretRecipeController {
 
 //    @Autowired
     private final ChefRepositories chefRepositories;
-//    RecipeRepositories recipeRepositories;
-
     private final RecipeRepositories recipeRepositories;
+    private final RecipeRepositoriesCrud recipeRepositoriesCrud;
 
-    public SecretRecipeController(ChefRepositories chefRepositories, RecipeRepositories recipeRepositories) {
+    public SecretRecipeController(ChefRepositories chefRepositories, RecipeRepositories recipeRepositories, RecipeRepositoriesCrud recipeRepositoriesCrud) {
         this.chefRepositories = chefRepositories;
         this.recipeRepositories = recipeRepositories;
+        this.recipeRepositoriesCrud = recipeRepositoriesCrud;
     }
 
     @GetMapping("/loginWithSecret")
@@ -55,21 +56,6 @@ public class SecretRecipeController {
         return new RedirectView("/loginWithSecret");
     }
 
-    // For practicing
-    @GetMapping("/login")
-    public String loginPage(){
-        return "/login.html";
-    }
-
-    @PostMapping("/login")
-    public RedirectView loginChef(String username,String password){
-        Chef chef = chefRepositories.findByUsername(username);
-        if((chef== null) || (!BCrypt.checkpw(password,chef.password))){
-            return new RedirectView("/login");
-        }
-        return new RedirectView("/");
-    }
-
     @GetMapping("/signup")
     public String signupPage(){
         return "/signup";
@@ -85,35 +71,29 @@ public class SecretRecipeController {
         return new RedirectView("/login");
     }
 
-    /**
-     *
-     * @return
-     */
-    @ResponseBody
-    @GetMapping("/recipe")
-    List<Recipe> getAllRecipe(){
-        return recipeRepositories.findAll();
+
+
+    @PostMapping("/addRecipe")
+    public RedirectView addRecipe(@ModelAttribute Recipe recipe){
+        recipeRepositoriesCrud.save(recipe);
+        return new RedirectView("/secretRecipe");
     }
 
-    /**
-     *
-     * @param recipe
-     * @return
-     */
-    @ResponseBody
-    @PostMapping("/recipe")
-    Recipe addRecipe(@RequestBody Recipe recipe){
-        return recipeRepositories.save(recipe);
+    //Just For Practicing
+    @GetMapping("/login")
+    public String loginPage(){
+        return "/login.html";
     }
 
-    @ResponseBody
-    @PostMapping("chef/{id}")
-    Recipe addRecipeToChef(@RequestBody Recipe recipe, @PathVariable Long id){
-        Chef chef =chefRepositories.findById(id).orElseThrow();
-        recipe.setChef(chef);
-
-        return recipeRepositories.save(recipe);
+    @PostMapping("/login")
+    public RedirectView loginChef(String username,String password){
+        Chef chef = chefRepositories.findByUsername(username);
+        if((chef== null) || (!BCrypt.checkpw(password,chef.password))){
+            return new RedirectView("/login");
+        }
+        return new RedirectView("/");
     }
+
 
 
 }
